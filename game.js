@@ -474,14 +474,25 @@ function loop() {
     requestAnimationFrame(loop);
 }
 
+function normalizeKey(key) {
+    // 统一字母键为小写，保留方向键名称
+    if (key && key.length === 1) return key.toLowerCase();
+    return key;
+}
+
 // 输入事件
 window.addEventListener('keydown', e => {
-    if (keys.hasOwnProperty(e.key)) keys[e.key] = true;
-    if (e.key.toLowerCase() === 'r') resetGame();
+    const key = normalizeKey(e.key);
+    if (keys.hasOwnProperty(key)) {
+        keys[key] = true;
+        e.preventDefault();
+    }
+    if (key === 'r') resetGame();
 });
 
 window.addEventListener('keyup', e => {
-    if (keys.hasOwnProperty(e.key)) keys[e.key] = false;
+    const key = normalizeKey(e.key);
+    if (keys.hasOwnProperty(key)) keys[key] = false;
 });
 
 window.addEventListener('mousemove', e => {
@@ -490,7 +501,8 @@ window.addEventListener('mousemove', e => {
     mouseY = (e.clientY - rect.top) * (GAME_HEIGHT / rect.height);
 });
 
-window.addEventListener('mousedown', () => {
+window.addEventListener('mousedown', e => {
+    if (e.button !== 0) return; // 只响应左键
     if (!gameRunning) return;
     const now = performance.now();
     if (player.canShoot(now)) {
