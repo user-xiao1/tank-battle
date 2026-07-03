@@ -1,0 +1,146 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Microsoft YaHei', 'Segoe UI', sans-serif;
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+    color: #fff;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+.game-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+}
+
+.hud {
+    width: 960px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 20px;
+    background: rgba(0, 0, 0, 0.4);
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.stat {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.label {
+    font-size: 14px;
+    color: #aaa;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.value {
+    font-size: 20px;
+    font-weight: bold;
+    color: #4ade80;
+}
+
+.bar {
+    width: 160px;
+    height: 14px;
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 7px;
+    overflow: hidden;
+}
+
+.fill {
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, #ef4444, #f59e0b, #4ade80);
+    transition: width 0.2s ease;
+}
+
+#gameCanvas {
+    border-radius: 12px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+    background: #1e293b;
+    cursor: crosshair;
+}
+
+.controls {
+    display: flex;
+    gap: 24px;
+    font-size: 13px;
+    color: #94a3b8;
+}
+
+.controls strong {
+    color: #e2e8f0;
+}
+
+.overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.75);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+    opacity: 1;
+    transition: opacity 0.3s ease;
+}
+
+.overlay.hidden {
+    opacity: 0;
+    pointer-events: none;
+}
+
+.panel {
+    background: rgba(30, 41, 59, 0.95);
+    padding: 40px 60px;
+    border-radius: 16px;
+    text-align: center;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 24px 80px rgba(0, 0, 0, 0.6);
+}
+
+.panel h1 {
+    font-size: 42px;
+    margin-bottom: 12px;
+    color: #f87171;
+}
+
+.panel p {
+    font-size: 20px;
+    margin-bottom: 24px;
+    color: #cbd5e1;
+}
+
+button {
+    padding: 12px 32px;
+    font-size: 16px;
+    font-weight: bold;
+    color: #fff;
+    background: linear-gradient(90deg, #3b82f6, #8b5cf6);
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: transform 0.1s ease, box-shadow 0.2s ease;
+}
+
+button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(59, 130, 246, 0.4);
+}
+
+button:active {
+    transform: translateY(0);
+}
