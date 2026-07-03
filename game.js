@@ -288,15 +288,48 @@ function createMap() {
     patterns.forEach(p => walls.push(new Wall(p.x, p.y, p.w, p.h)));
 }
 
-function spawnEnemy() {
-    let x, y, d;
-    do {
-        x = rand(40, GAME_WIDTH - 40);
-        y = rand(40, GAME_HEIGHT - 40);
-        d = Math.hypot(x - player.x, y - player.y);
-    } while (d < 300 || walls.some(w => rectsIntersect({ x: x - ENEMY_SIZE / 2, y: y - ENEMY_SIZE / 2, w: ENEMY_SIZE, h: ENEMY_SIZE }, w.rect)));
+function isPositionSafe(x, y, size, minDistanceFromPlayer = 0) {
+    const rect = { x: x - size / 2, y: y - size / 2, w: size, h: size };
 
-    enemies.push(new Enemy(x, y));
+    // 不能超出边界
+    if (rect.x < 0 || rect.x + rect.w > GAME_WIDTH || rect.y < 0 || rect.y + rect.h > GAME_HEIGHT) {
+        return false;
+    }
+
+    // 不能和墙体重叠
+    if (walls.some(w => rectsIntersect(rect, w.rect))) {
+        return false;
+    }
+
+    // 与玩家保持安全距离
+    if (player && Math.hypot(x - player.x, y - player.y) < minDistanceFromPlayer) {
+        return false;
+    }
+
+    return true;
+}
+
+function findSafePosition(size, minDistanceFromPlayer = 0, avoidEnemies = false) {
+    let x, y;
+    let attempts = 0;
+    const maxAttempts = 200;
+
+    do {
+        x = rand(size, GAME_WIDTH - size);
+        y = rand(size, GAME_HEIGHT - size);
+        attempts++;
+
+        if (avoidEnemies && enemies.some(e => Math.hypot(x - e.x, y - e.y) < size * 1.5)) {
+            continue;
+        }
+    } while (!isPositionSafe(x, y, size, minDistanceFromPlayer) && attempts < maxAttempts);
+
+    return { x, y };
+}
+
+function spawnEnemy() {
+    const pos = findSafePosition(ENEMY_SIZE, 300, true);
+    enemies.push(new Enemy(pos.x, pos.y));
 }
 
 function createExplosion(x, y, color) {
@@ -306,7 +339,6 @@ function createExplosion(x, y, color) {
 }
 
 function resetGame() {
-    player = new Tank(GAME_WIDTH / 2, GAME_HEIGHT / 2, '#22c55e');
     bullets = [];
     enemies = [];
     particles = [];
@@ -316,6 +348,17 @@ function resetGame() {
     enemySpawnTimer = 0;
     enemiesToSpawn = 3;
     createMap();
+
+    // 玩家出生在安全位置（优先中心，若被墙挡住则随机找空地）
+    const centerX = GAME_WIDTH / 2;
+    const centerY = GAME_HEIGHT / 2;
+    if (isPositionSafe(centerX, centerY, TANK_SIZE)) {
+        player = new Tank(centerX, centerY, '#22c55e');
+    } else {
+        const pos = findSafePosition(TANK_SIZE);
+        player = new Tank(pos.x, pos.y, '#22c55e');
+    }
+
     overlay.classList.add('hidden');
     updateHUD();
 }
